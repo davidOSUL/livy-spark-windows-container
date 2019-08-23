@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+ master:
+  build:
+   context: ../spark_Context
+   dockerfile: base-image
+  image: base-image
+  expose:
+    - "7077"
+  ports:
+    - "8080:8080"
+  container_name: spark-master
+  volumes:
+    - ./scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Master"]
+ 
+ worker:
+  build:
+   context: ../spark_Context
+   dockerfile: base-image
+  image: base-image
+  ports:
+    - "8082:8082"
+  container_name: spark-worker
+  depends_on:
+    - master
+  volumes:
+    - ./scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Worker"]
+
+ livy:
+  build:
+   context: ../livy_Context
+   dockerfile: livy-image
+  image: livy-image
+  ports:
+    - "8998:8998"
+  container_name: spark-livy
+  depends_on:
+    - master
+    - worker
+  volumes:
+    - ./scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Livy"]
+
+#  worker:
+#   build:
+#    dockerfile: base-image
+#   depends_on:
+#    - master
+#   expose:
+#     - "8081"
+#   container_name: spark-worker
+  
