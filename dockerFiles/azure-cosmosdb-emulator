@@ -6,11 +6,6 @@
 #Changed From original 
 FROM mcr.microsoft.com/windows/servercore:ltsc2019 
 
-# Metadata indicating an image maintainer.
-LABEL original-file-maintainer=mominag@microsoft.com
-#Added to original
-LABEL modifier=t-daosul@microsoft.com 
-
 # Add the CosmosDB installer msi into the package
 ADD https://aka.ms/cosmosdb-emulator c:\\CosmosDBEmulator\\AzureCosmosDB.Emulator.msi
 

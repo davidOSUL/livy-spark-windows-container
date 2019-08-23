@@ -1,5 +1,5 @@
 ########################################################################################
-#Spark w/ Livy Dockerfiles. Dockerfile 1/2: SPARK BASE IMAGE
+#Spark w/ Livy Dockerfiles. SPARK BASE IMAGE
 ########################################################################################
 
 #=================INITIAL SETUP============================================= 
@@ -9,6 +9,13 @@
     #Metadata indicating an image maintainer.
         LABEL maintainer="t-daosul@microsoft.com"
         LABEL description="Used as a base image with spark, scala, and java"
+#===========================================================================
+
+#======================ARGS=================================================
+    #Set up Spark arguments
+        ARG SPARK_WORKER_UI_PORT
+        ARG SPARK_MASTER_UI_PORT
+        ARG SPARK_MASTER_PORT   
 #===========================================================================
 
 #====================ENVIRONMENT VARIABLES====================================
@@ -21,6 +28,9 @@
         ENV SPARK_HOME ${SPARK_FOLDER}/${SPARK_VERSION_STRING}
         ENV HADOOP_HOME ${SPARK_HOME}
         ENV SPARK_BIN ${SPARK_HOME}/bin
+        ENV SPARK_WORKER_UI_PORT=$SPARK_WORKER_UI_PORT
+        ENV SPARK_MASTER_UI_PORT=$SPARK_MASTER_UI_PORT
+        ENV SPARK_MASTER_PORT=$SPARK_MASTER_PORT
         
     #Set winutils related environment variables (NOTE: should be the same hadoop version as SPARK_VERSION_STRING)====
         ENV WINUTILS_DOWNLOAD_URL https://github.com/steveloughran/winutils/raw/master/hadoop-2.7.1/bin/winutils.exe
@@ -83,15 +93,7 @@
         RUN setx /M PATH $( ${env:PATH} + ';'+ ${env:SCALA_HOME} + '\bin' )
 #=======================================================================
 
-#===================LIVY=================================================
-    #Install Livy
-        RUN wget ${env:LIVY_DOWNLOAD_URL} -UseBasicParsing -OutFile ${env:LIVY_DOWNLOAD_NAME} -PassThru 
-        RUN Expand-Archive -Path ${env:LIVY_DOWNLOAD_NAME} -DestinationPath ${env:LIVY_HOME} ; \
-            mv -Path ${env:LIVY_HOME}\*\* -Destination ${env:LIVY_HOME} ; \
-            rm ${env:LIVY_DOWNLOAD_NAME} ; \
-            mkdir /apps/spark-modules
-            
-#========================================================================
+
 VOLUME ["$SPARK_LOG"]
 
 WORKDIR $SPARK_FOLDER

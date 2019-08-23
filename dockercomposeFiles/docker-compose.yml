@@ -1,54 +1,56 @@
-version: '3.7'
+version: '2.4'
 services:
  master:
   build:
-   context: ../spark_Context
-   dockerfile: base-image
+   context: ${ROOT_DIR}/dockerContexts/spark_Context
+   dockerfile: ${ROOT_DIR}/dockerFiles/base-image
+   args:
+    -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
+    -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
+    -SPARK_MASTER_PORT : "${SPARK_MASTER_PORT}"
   image: base-image
   expose:
-    - "7077"
+    - "${SPARK_MASTER_PORT}"
   ports:
-    - "8080:8080"
+    - "${SPARK_MASTER_UI_PORT}:${SPARK_MASTER_UI_PORT}"
   container_name: spark-master
   volumes:
-    - ./scripts:C:/scripts
-  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Master"]
+    - ${ROOT_DIR}/dockerContexts/spark_Context/scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/spark-entrypoint.ps1", "Master"]
  
  worker:
   build:
-   context: ../spark_Context
-   dockerfile: base-image
+   context: ${ROOT_DIR}/dockerContexts/spark_Context
+   dockerfile: ${ROOT_DIR}/dockerFiles/base-image
+   args:
+    -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
+    -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
+    -SPARK_MASTER_PORT : "${SPARK_MASTER_PORT}"
   image: base-image
   ports:
-    - "8082:8082"
+    - "${SPARK_WORKER_UI_PORT}:${SPARK_WORKER_UI_PORT}"
   container_name: spark-worker
   depends_on:
     - master
   volumes:
-    - ./scripts:C:/scripts
-  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Worker"]
+    - ${ROOT_DIR}/dockerContexts/spark_Context/scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/spark-entrypoint.ps1", "Worker"]
 
  livy:
   build:
-   context: ../livy_Context
-   dockerfile: livy-image
+   context: ${ROOT_DIR}/dockerContexts/livy_Context
+   dockerfile: ${ROOT_DIR}/dockerFiles/livy-image
+   args:
+    -LIVY_SERVER_PORT: "${LIVY_SERVER_PORT}"
   image: livy-image
   ports:
-    - "8998:8998"
+    - "${LIVY_SERVER_PORT}:${LIVY_SERVER_PORT}"
   container_name: spark-livy
   depends_on:
     - master
     - worker
   volumes:
-    - ./scripts:C:/scripts
-  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/entrypoint.ps1", "Livy"]
+    - ${ROOT_DIR}/dockerContexts/livy_Context/scripts:C:/scripts
+  entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/livy-entrypoint.ps1"]
 
-#  worker:
-#   build:
-#    dockerfile: base-image
-#   depends_on:
-#    - master
-#   expose:
-#     - "8081"
-#   container_name: spark-worker
   

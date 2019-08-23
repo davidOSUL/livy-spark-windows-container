@@ -1,9 +1,9 @@
-version: '2.3' #have to use version 2 to have mem_limit enabled
+version: '2.4'
 services:
     cosmosdb:
         build:
-          context: ../dockerContexts/cosmosDB_Context
-          dockerfile: ../dockerFiles/azure-cosmosdb-emulator
+          context: ${ROOT_DIR}/dockerContexts/cosmosDB_Context
+          dockerfile: ${ROOT_DIR}/dockerFiles/azure-cosmosdb-emulator
         image: azure-cosmosdb-emulator #For whatever reason, the microsoft image doesn't work in compose
                                        #See also: https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/27
         mem_limit: 2GB
@@ -11,18 +11,19 @@ services:
           - type: bind
             source: ${LOCALAPPDATA}/azure-cosmosdb-emulator.hostd
             target: C:/CosmosDB.Emulator/bind-mount
+        container_name: cosmosDB
         ports:
-            - '8081:8081'
-            - '8900:8900'
-            - '8901:8901'
-            - '8979:8979'
-            - '10250:10250'
-            - '10251:10251'
-            - '10252:10252'
-            - '10253:10253'
-            - '10254:10254'
-            - '10255:10255'
-            - '10256:10256'
-            - '10350:10350'
+            - "${COSMOS_DB_HOST_PORT}:8081"
+            - "8900:8900"
+            - "${GREMLIN_ENDPOINT_HOST_PORT}:8901"
+            - "8979:8979"
+            - "10250:10250"
+            - "10251:10251"
+            - "10252:10252"
+            - "10253:10253"
+            - "10254:10254"
+            - "10255:10255"
+            - "10256:10256"
+            - "${CASSANDRA_ENDPOINT_HOST_PORT}:10350"
         environment:
-          - "${COSMOSDB_CONTAINER_ENVIRONMENT_SETTING}"
+          - "${COSMOSDB_CONTAINER_ENVIRONMENT_SETTING}" #set in StartContainers script 
