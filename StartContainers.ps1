@@ -58,7 +58,7 @@ if ($DontStartSparkLivy -And !$script:RunningCosmosDBContainer) {
 }
 
 #Set up all the configuration values
-& ("${PSScriptRoot}/InitConfigValues.ps1")
+& ("${PSScriptRoot}/scripts/InitConfigValues.ps1")
 
 $script:sparkLivyComposeFile = " -f  ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.yml"
 $script:cosmosDBComposeFile = ""
