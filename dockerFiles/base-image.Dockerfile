@@ -7,7 +7,6 @@
         FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
     #Metadata indicating an image maintainer.
-        LABEL maintainer="t-daosul@microsoft.com"
         LABEL description="Used as a base image with spark, scala, and java"
 #===========================================================================
 
@@ -84,6 +83,7 @@
 
 #==================SCALA================================================
     #Install Scala 
+        RUN echo ${env:SCALA_DOWNLOAD_URL}
         RUN wget ${env:SCALA_DOWNLOAD_URL} -UseBasicParsing -OutFile ${env:SCALA_MSI_NAME} -PassThru 
         RUN mkdir ${env:SCALA_HOME} ; \
             start-process -filepath C:\${env:SCALA_MSI_NAME} -passthru -wait -argumentlist "/quiet,INSTALLDIR=${env:SCALA_HOME}" ; \

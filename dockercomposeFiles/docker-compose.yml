@@ -3,7 +3,7 @@ services:
  master:
   build:
    context: ${ROOT_DIR}/dockerContexts/spark_Context
-   dockerfile: ${ROOT_DIR}/dockerFiles/base-image
+   dockerfile: ${ROOT_DIR}/dockerFiles/base-image.Dockerfile
    args:
     -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
     -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
@@ -21,7 +21,7 @@ services:
  worker:
   build:
    context: ${ROOT_DIR}/dockerContexts/spark_Context
-   dockerfile: ${ROOT_DIR}/dockerFiles/base-image
+   dockerfile: ${ROOT_DIR}/dockerFiles/base-image.Dockerfile
    args:
     -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
     -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
@@ -39,7 +39,7 @@ services:
  livy:
   build:
    context: ${ROOT_DIR}/dockerContexts/livy_Context
-   dockerfile: ${ROOT_DIR}/dockerFiles/livy-image
+   dockerfile: ${ROOT_DIR}/dockerFiles/livy-image.Dockerfile
    args:
     -LIVY_SERVER_PORT: "${LIVY_SERVER_PORT}"
   image: livy-image
