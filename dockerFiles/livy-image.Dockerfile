@@ -6,8 +6,7 @@
     #Indicates that the base-image will be used as the base image.
         FROM base-image
 
-    #Metadata indicating an image maintainer/description
-        LABEL maintainer="t-daosul@microsoft.com"
+    #Metadata indicating a description
         LABEL description="Used to build image with Livy server running on it"
 #===========================================================================
 
