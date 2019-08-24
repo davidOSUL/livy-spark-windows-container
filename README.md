@@ -21,19 +21,19 @@ To see how to use the script with more options do:
 Get-Help .\ScriptContainers.ps1 -Detailed 
 ```
 ### CosmosDB Emulator
-To start up a cosmosDB emulator container in addition to the spark/livy containers do:
+To start up a cosmosDB emulator container in addition to the spark/livy containers, open up a new powershell window <b>as an administrator</b>, cd into the repo folder, and execute the following command:
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type>
+.\StartContainers.ps1 -CosmosDbEmulator <type> -ImportCosmosDbCert
 ```
 Where \<type\> is one of: MSI, Cassandra, Gremlin.
 
 To ONLY start up a cosmosDB emulator and not start spark/livy container do:
 
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type> -DontStartSparkLivy
+.\StartContainers.ps1 -CosmosDbEmulator <type> -DontStartSparkLivy -ImportCosmosDbCert
 ```
-Note that once you start up the cosmosDB emulator you will need to install the emulator's SSL certificate. 
-To do this, open up a new powershell window <b>as an administrator</b>, cd into the repo folder, and execute the following command:
+The -ImportCosmosDbCert flag is necessary to install the emulator's SSL certificate. If you prefer, you can run the command
+without the flag (which doesn't require administrator access), and then later install the cert yourself by opening up a new powershell window <b>as an administrator</b>, cd into the repo folder, and executing the following command:
 ```
 .\Scripts\ImportCosmosDbCert.ps1
 ```
