@@ -1,4 +1,3 @@
 #Requires -RunAsAdministrator
 
-Set-Location ${env:LOCALAPPDATA}\azure-cosmosdb-emulator.hostd
-& .\importcert.ps1
+& ${env:LOCALAPPDATA}\azure-cosmosdb-emulator.hostd\importcert.ps1

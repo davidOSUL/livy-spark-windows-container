@@ -10,7 +10,7 @@
     with Gremlin API enabled
 
 .PARAMETER CosmosDbEmulator
-    Add a cosmosDB emulator to the composed containers in addition to livy server
+    Add a cosmosDB emulator to the composed containers in addition to livy server. 
 
 .PARAMETER RebuildContainers 
     Force Compose to rebuild all the containers
@@ -19,8 +19,7 @@
     Run the containers in detached mode 
 
 .PARAMETER DontStartSparkLivy
-    Will not start the livy server/spark containers. If the CosmosDbEmulator option is provided
-    will start the cosmosDB container only, otherwise will do nothing.
+    Will not start the livy server/spark containers (will only start cosmosDB)
 
 .PARAMETER VerifyOnly
     Rather than starting any containers with docker-compose up will just verify the compose files with
@@ -29,32 +28,48 @@
 .PARAMETER TestRun
     Does everything the script would normally do short of executing the compose command
     (that is, prints out what it would normally print out and sets config values)
+
+.PARAMETER ImportCosmosDbCert
+    Imports the SSL cert for cosmos DB. Requires running script as admin in order to work.
+
 #>
 
+[cmdletbinding(DefaultParameterSetName='NoCosmos')]
 Param(
     [ValidateNotNullOrEmpty()]
     [ValidateSet('MSI','Cassandra', 'Gremlin')]
     [Alias('cosmosDB', 'docDB')]
+    [Parameter(ParameterSetName='Cosmos',Mandatory = $true )]
     [string]$CosmosDbEmulator,
 
     [Alias('b', 'rebuild')]
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
     [switch]$RebuildContainers,
 
     [Alias('detach', '-d')]
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
     [switch]$RunInBackground,
 
+    [Parameter(ParameterSetName='Cosmos')]
     [switch]$DontStartSparkLivy,
 
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
     [switch]$VerifyOnly,
 
-    [switch]$TestRun
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
+    [switch]$TestRun,
+
+    [Parameter(ParameterSetName='Cosmos')]
+    [switch]$ImportCosmosDbCert
     
 )
-
-
-if ($DontStartSparkLivy -And !$script:RunningCosmosDBContainer) {
-    "Not starting any containers"
-    exit 0
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+if (!$isAdmin -And $ImportCosmosDbCert) {
+    Throw "Must run script as an Admin in order to import cert"
 }
 
 #Set up all the configuration values
@@ -63,8 +78,6 @@ if ($DontStartSparkLivy -And !$script:RunningCosmosDBContainer) {
 $script:sparkLivyComposeFile = " -f  ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.yml"
 $script:cosmosDBComposeFile = ""
 $script:RunningCosmosDBContainer = $PSBoundParameters.ContainsKey('CosmosDbEmulator')
-
-
 
 
 if ($script:RunningCosmosDBContainer) {
@@ -108,7 +121,6 @@ if ($script:RunningCosmosDBContainer) {
     $composeCommand +=  $script:cosmosDBComposeFile
 }
 
-#at this point we know !DontStartSparkLivy || RunningCosmosDBContainer (or else we would have exited at beggining) so can safely proceed with executing command
 if ($VerifyOnly) {
     $composeCommand += " config"
 } else {
@@ -142,4 +154,7 @@ if (!$TestRun) {
     Invoke-Expression $composeCommand
 }
 
+if ($ImportCosmosDbCert) {
+    & ("${env:ROOT_DIR}/scripts/ImportCosmosDbCert.ps1")
+}
 
