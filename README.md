@@ -18,7 +18,7 @@ Optionally can also use to start up a windows container with a cosmosDB emulator
 ### Script Options
 To see how to use the script with more options do:
 ```
-Get-Help .\ScriptContainers.ps1 -Detailed 
+Get-Help .\StartContainers.ps1 -Detailed 
 ```
 ### CosmosDB Emulator
 To start up a cosmosDB emulator container in addition to the spark/livy containers, open up a new powershell window <b>as an administrator</b>, cd into the repo folder, and execute the following command:
