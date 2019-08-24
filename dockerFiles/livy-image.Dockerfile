@@ -26,7 +26,7 @@
         #ENV LIVY_DOWNLOAD_NAME apache-livy-${LIVY_BUILD_VERSION}-incubating-bin.zip
 
         #Using my fork of livy because the apache version currently does not work on Windows OS
-        ENV LIVY_DOWNLOAD_URL https://github.com/davidOSUL/incubator-livy/releases/download/v0.7-incubating-SNAPSHOT/${LIVY_DOWNLOAD_NAME}}
+        ENV LIVY_DOWNLOAD_URL https://github.com/davidOSUL/incubator-livy/releases/download/v0.7-incubating-SNAPSHOT/${LIVY_DOWNLOAD_NAME}
         #ENV LIVY_DOWNLOAD_URL https://www-us.apache.org/dist/incubator/livy/${LIVY_BUILD_VERSION}-incubating/${LIVY_DOWNLOAD_NAME} 
 #=================================================================================
 
