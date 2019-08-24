@@ -41,9 +41,10 @@ without the flag (which doesn't require administrator access), and then later in
 ### Changing default values for ports, etc.
 Values for the ports used for the livy server, etc. can be changed in scripts/InitConfigValues.ps1
 
-### Solving potential issues
+# Problems
+You can run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.
 If you see any docker related issues try the following command:
 ```
 docker system prune
 ```
-You can also run the script without the -RunInBackground flag to see all the output from the docker logs as it runs
+- If you have any problems please fill out an [issue](https://github.com/davidOSUL/livy-spark-windows-container/issues) (or submit a [PR](https://github.com/davidOSUL/livy-spark-windows-container/pulls)), thanks!
