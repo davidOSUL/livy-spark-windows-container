@@ -23,14 +23,14 @@ Get-Help .\StartContainers.ps1 -Detailed
 ### CosmosDB Emulator
 To start up a cosmosDB emulator container in addition to the spark/livy containers, open up a new powershell window <b>as an administrator</b>, cd into the repo folder, and execute the following command:
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type> -ImportCosmosDbCert
+.\StartContainers.ps1 -CosmosDbEmulator <type> -ImportCosmosDbCert -RunInBackground
 ```
 Where \<type\> is one of: MSI, Cassandra, Gremlin.
 
 To ONLY start up a cosmosDB emulator and not start spark/livy container do:
 
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type> -DontStartSparkLivy -ImportCosmosDbCert
+.\StartContainers.ps1 -CosmosDbEmulator <type> -DontStartSparkLivy -ImportCosmosDbCert -RunInBackground
 ```
 The -ImportCosmosDbCert flag is necessary to install the emulator's SSL certificate. If you prefer, you can run the command
 without the flag (which doesn't require administrator access), and then later install the cert yourself by opening up a new powershell window <b>as an administrator</b>, cd into the repo folder, and executing the following command:
@@ -40,3 +40,11 @@ without the flag (which doesn't require administrator access), and then later in
 
 ### Changing default values for ports, etc.
 Values for the ports used for the livy server, etc. can be changed in scripts/InitConfigValues.ps1
+
+# Problems
+You can run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.
+If you see any docker related issues try the following command:
+```
+docker system prune
+```
+- If you have any problems please fill out an [issue](https://github.com/davidOSUL/livy-spark-windows-container/issues) (or submit a [PR](https://github.com/davidOSUL/livy-spark-windows-container/pulls)), thanks!
