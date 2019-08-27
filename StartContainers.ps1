@@ -124,7 +124,7 @@ if ($script:RunningCosmosDBContainer) {
 if ($VerifyOnly) {
     $composeCommand += " config"
 } else {
-    $composeCommand += " up " + $extraParams 
+    $composeCommand += " up " + $extraParams + " --force-recreate"
 }
 "Executing Command: " + $composeCommand
 

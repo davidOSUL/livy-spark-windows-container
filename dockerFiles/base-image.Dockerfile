@@ -10,13 +10,6 @@
         LABEL description="Used as a base image with spark, scala, and java"
 #===========================================================================
 
-#======================ARGS=================================================
-    #Set up Spark arguments
-        ARG SPARK_WORKER_UI_PORT
-        ARG SPARK_MASTER_UI_PORT
-        ARG SPARK_MASTER_PORT   
-#===========================================================================
-
 #====================ENVIRONMENT VARIABLES====================================
     #Set Spark related Environment Variables
         ENV SPARK_VERSION 2.4.3
@@ -27,10 +20,7 @@
         ENV SPARK_HOME ${SPARK_FOLDER}/${SPARK_VERSION_STRING}
         ENV HADOOP_HOME ${SPARK_HOME}
         ENV SPARK_BIN ${SPARK_HOME}/bin
-        ENV SPARK_WORKER_UI_PORT=$SPARK_WORKER_UI_PORT
-        ENV SPARK_MASTER_UI_PORT=$SPARK_MASTER_UI_PORT
-        ENV SPARK_MASTER_PORT=$SPARK_MASTER_PORT
-        
+
     #Set winutils related environment variables (NOTE: should be the same hadoop version as SPARK_VERSION_STRING)====
         ENV WINUTILS_DOWNLOAD_URL https://github.com/steveloughran/winutils/raw/master/hadoop-2.7.1/bin/winutils.exe
 

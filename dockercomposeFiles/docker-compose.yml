@@ -4,16 +4,16 @@ services:
   build:
    context: ${ROOT_DIR}/dockerContexts/spark_Context
    dockerfile: ${ROOT_DIR}/dockerFiles/base-image.Dockerfile
-   args:
-    -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
-    -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
-    -SPARK_MASTER_PORT : "${SPARK_MASTER_PORT}"
   image: base-image
   expose:
     - "${SPARK_MASTER_PORT}"
   ports:
     - "${SPARK_MASTER_UI_PORT}:${SPARK_MASTER_UI_PORT}"
   container_name: spark-master
+  environment:
+    - SPARK_WORKER_UI_PORT
+    - SPARK_MASTER_UI_PORT
+    - SPARK_MASTER_PORT
   volumes:
     - ${ROOT_DIR}/dockerContexts/spark_Context/scripts:C:/scripts
   entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/spark-entrypoint.ps1", "Master"]
@@ -22,16 +22,16 @@ services:
   build:
    context: ${ROOT_DIR}/dockerContexts/spark_Context
    dockerfile: ${ROOT_DIR}/dockerFiles/base-image.Dockerfile
-   args:
-    -SPARK_WORKER_UI_PORT: "${SPARK_WORKER_UI_PORT}"
-    -SPARK_MASTER_UI_PORT: "${SPARK_MASTER_UI_PORT}"
-    -SPARK_MASTER_PORT : "${SPARK_MASTER_PORT}"
   image: base-image
   ports:
     - "${SPARK_WORKER_UI_PORT}:${SPARK_WORKER_UI_PORT}"
   container_name: spark-worker
   depends_on:
     - master
+  environment:
+    - SPARK_WORKER_UI_PORT
+    - SPARK_MASTER_UI_PORT
+    - SPARK_MASTER_PORT
   volumes:
     - ${ROOT_DIR}/dockerContexts/spark_Context/scripts:C:/scripts
   entrypoint: ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass", "C:/scripts/spark-entrypoint.ps1", "Worker"]
@@ -40,12 +40,12 @@ services:
   build:
    context: ${ROOT_DIR}/dockerContexts/livy_Context
    dockerfile: ${ROOT_DIR}/dockerFiles/livy-image.Dockerfile
-   args:
-    -LIVY_SERVER_PORT: "${LIVY_SERVER_PORT}"
   image: livy-image
   ports:
     - "${LIVY_SERVER_PORT}:${LIVY_SERVER_PORT}"
   container_name: spark-livy
+  environment:
+    - LIVY_SERVER_PORT
   depends_on:
     - master
     - worker

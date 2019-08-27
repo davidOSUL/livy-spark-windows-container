@@ -4,6 +4,7 @@ Param(
     [ValidateSet('Worker','Master')]
     [string]$Type
 )
+
 Set-Location ${env:SPARK_HOME}
 
     If ($Type -eq 'Worker') 
