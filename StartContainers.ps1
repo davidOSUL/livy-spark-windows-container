@@ -5,12 +5,14 @@
 
 .DESCRIPTION
     Start a spark livy server. Can also start a cosmosDB emulator container as part of the compose.
-    To do so, pass in CosmosDbEmulator with a type (MSI, Cassandra, Gremlin) specifying whether this container
-    should act (and have ports corresponding to) the MSI version of the emulator, with Cassandra endpoint API enabled,
-    with Gremlin API enabled
+    If neeeded, can open up Cassandra and/or Gremlin endpoints in the cosmosDB container.
+    To do so, pass in CosmosDbEmulatorEndpoints flag with Cassandra and/or Gremlin
 
 .PARAMETER CosmosDbEmulator
     Add a cosmosDB emulator to the composed containers in addition to livy server. 
+
+.PARAMETER CosmosDbEmulatorEndpoints
+    Add endpoints (Gremlin and/or cassandra) to the cosmosDB container
 
 .PARAMETER RebuildContainers 
     Force Compose to rebuild all the containers
@@ -37,15 +39,23 @@
 .PARAMETER DockerPrune
     Runs "docker system prune" before doing anything else
 
+.PARAMETER HardReset
+    Before doing regular compose, rebuilds the containers that will be run with this script without any cache
+
 #>
 
 [cmdletbinding(DefaultParameterSetName='NoCosmos')]
 Param(
     [ValidateNotNullOrEmpty()]
-    [ValidateSet('MSI','Cassandra', 'Gremlin')]
     [Alias('cosmosDB', 'docDB')]
     [Parameter(ParameterSetName='Cosmos',Mandatory = $true )]
-    [string]$CosmosDbEmulator,
+    [switch]$CosmosDbEmulator,
+
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('Cassandra', 'Gremlin')]
+    [Alias('endpoints')]
+    [Parameter(ParameterSetName='Cosmos')]
+    [string[]]$CosmosDbEmulatorEndpoints,
 
     [Alias('b', 'rebuild')]
     [Parameter(ParameterSetName='Cosmos')]
@@ -73,7 +83,11 @@ Param(
 
     [Parameter(ParameterSetName='Cosmos')]
     [Parameter(ParameterSetName='NoCosmos')]
-    [switch]$DockerPrune
+    [switch]$DockerPrune,
+
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
+    [switch]$HardReset
     
 )
 $ImportCosmosDbCert = -not $DontImportCosmosDbCert
@@ -90,6 +104,10 @@ if ($ImportCosmosDbCert -And (-not $RunInBackground)) {
            and then later you can run the ./scripts/ImportCosmosDbCert script yourself" #otherwise we will never get the chance to import the cert because docker will be active in the powershell window
 }
 
+if ((!$DockerPrune -or !$RebuildContainers) -and $HardReset) {
+    Throw "HardReset option can only be used with both the DockerPrune and RebuildContainers options enabled"
+}
+
 if ($DockerPrune) {
     docker system prune
 }
@@ -99,37 +117,47 @@ if ($DockerPrune) {
 
 . ${env:ROOT_DIR}/scripts/Utils.ps1
 
-$script:RunningCosmosDBContainer = $PSBoundParameters.ContainsKey('CosmosDbEmulator')
 
 
 $cosmosDBDuplicateErrorMessage = 'ERROR: Cannot create a cosmosDB container. A cosmosDB container is already running or a file in the volume is being used on the host machine. 
-Make sure your cosmosDB containers are stopped! Try: "./StopContainers -Type CosmosDBOnly -RemoveVolumes"'
+Make sure your cosmosDB containers are stopped! Try: "./StopContainers CosmosDBOnly -RemoveVolumes"'
 
-if ($script:RunningCosmosDBContainer) {
+if ($CosmosDbEmulator) {
 
     $hostDir = "${env:LOCALAPPDATA}/CosmosDBEmulatorCert"
-    if (Test-Path $hostDir) {
-        "Attempting to remove cosmosDB volume"
+
+    if ( (Test-Path $hostDir)) {
+        $files = Get-ChildItem "$hostDir"
+        foreach ($f in $files) {
+            if (IsFileNotAccessible -FullFileName $f.FullName) {
+                Throw $cosmosDBDuplicateErrorMessage
+            }
+        }
         try {
+            "Attempting to remove hostdir"
             Remove-Item $hostDir -Recurse -Force -ErrorAction Stop
         } catch {
             Throw $cosmosDBDuplicateErrorMessage
         }
     }
+   
     mkdir $hostDir 2>$null 
     "CosmosDB container will be accessible at ${env:COSMOS_DB_HOST_PORT}"
-    switch($CosmosDbEmulator) {
-        'MSI' {
-            "Starting up docDB container with similar port settings to MSI version of emulator"
-            $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING = "FAKE_ENV_VAR=true" #doing this rather than blank string to avoid docker warning
-        }
-        'Cassandra' {
-            "Starting up docDB container with Cassandra endpoint API enabled on port ${env:CASSANDRA_ENDPOINT_HOST_PORT}"
-            $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING = "AZURE_COSMOS_EMULATOR_CASSANDRA_ENDPOINT=true"
-        }
-        'Gremlin' {
-            "Starting up docDB container with Gremlin endpoint API enabled on port ${env:GREMLIN_ENDPOINT_HOST_PORT}"
-            $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING = "AZURE_COSMOS_EMULATOR_GREMLIN_ENDPOINT=true"
+   
+    #doing this rather than blank string to avoid docker warning
+    $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_0 = "FAKE_ENV_VAR_0=true" 
+    $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_1 = "FAKE_ENV_VAR_1=true"
+
+    foreach($endpoint in $CosmosDbEmulatorEndpoints) {
+        switch($endpoint) {
+            'Cassandra' {
+                "Cassandra endpoint API enabled on port ${env:CASSANDRA_ENDPOINT_HOST_PORT}"
+                $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_0 = "AZURE_COSMOS_EMULATOR_CASSANDRA_ENDPOINT=true"
+            }
+            'Gremlin' {
+                "Gremlin endpoint API enabled on port ${env:GREMLIN_ENDPOINT_HOST_PORT}"
+                $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_1 = "AZURE_COSMOS_EMULATOR_GREMLIN_ENDPOINT=true"
+            }
         }
     }
 }
@@ -143,7 +171,7 @@ if ($RebuildContainers) {
     $extraParams += " --build"
 }
 
-if ($script:RunningCosmosDBContainer) {
+if ($CosmosDbEmulator) {
     if (!$DontStartSparkLivy) {
         $Type = 'AllContainers'
     } else {
@@ -155,6 +183,9 @@ if ($script:RunningCosmosDBContainer) {
 
 $composeCommand = GetComposeCommand -Type $Type
 
+if ($HardReset) {
+    Invoke-Expression ($composeCommand + " build --no-cache")
+}
 if ($VerifyOnly) {
     $composeCommand += " config"
 } else {
@@ -179,20 +210,25 @@ if (!$VerifyOnly) {
        'To see the docker logs use the "./scripts/ViewLogs.ps1" script'
     }
 
-    if ($script:RunningCosmosDBContainer) {
+    if ($CosmosDbEmulator) {
         'To open up an interactive shell within the cosmosDB emulator use the script: "./scripts/StartInteractiveCosmosBShell.ps1"'
     }
+
+    if (!$ImportCosmosDbCert) {
+        "To import the cosmosDB SSL cert yourself do ./scripts/ImportCosmosDBCert.ps1"
+    }
+
     'NOTE: If you encounter any issues try re-running the script.
     (if that still does not work try re-running the script with the -DockerPrune option)'
 }
 
 if (!$TestRun) {
     Invoke-Expression $composeCommand
-    if ($ImportCosmosDbCert) {
-        Invoke-Expression "${env:ROOT_DIR}/scripts/ImportCosmosDbCert.ps1 -Wait"
-    } else {
-        "To import the cosmosDB SSL cert yourself do ./scripts/ImportCosmosDBCert.ps1"
+
+    if (!$VerifyOnly -and $ImportCosmosDbCert) {
+            Invoke-Expression "${env:ROOT_DIR}/scripts/ImportCosmosDbCert.ps1 -Wait"
     }
+    
 }
 
 

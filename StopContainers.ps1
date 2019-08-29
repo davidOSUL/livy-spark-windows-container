@@ -10,6 +10,8 @@ Param (
     [switch]$RemoveVolumes
 )
 
+& ("${PSScriptRoot}/scripts/InitConfigValues.ps1")
+
 . ${env:ROOT_DIR}/scripts/Utils.ps1
 
 

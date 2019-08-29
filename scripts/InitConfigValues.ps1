@@ -15,4 +15,6 @@
     #Right now this value isn't used because compose files don't support env variables in the "version" option
     $env:DOCKER_COMPOSE_VERSION= '2.4' #have to use version 2 to have mem_limit enabled. 
     $env:ROOT_DIR = (Get-Item ${PSScriptRoot}).Parent.FullName
+    $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_0 = "FAKE_ENV_VAR_0=true" 
+    $env:COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_1 = "FAKE_ENV_VAR_1=true"
 
