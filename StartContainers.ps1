@@ -29,8 +29,10 @@
     Does everything the script would normally do short of executing the compose command
     (that is, prints out what it would normally print out and sets config values)
 
-.PARAMETER ImportCosmosDbCert
-    Imports the SSL cert for cosmos DB. Requires running script as admin in order to work, and also reequires -RunInBackground enabled
+.PARAMETER DontImportCosmosDbCert
+    Doesn't import the SSL cert for cosmos DB.
+    Without this flag enabled,
+    one must run the script as admin in order to work, and also have -RunInBackground enabled
 
 .PARAMETER DockerPrune
     Runs "docker system prune" before doing anything else
@@ -67,20 +69,27 @@ Param(
     [switch]$TestRun,
 
     [Parameter(ParameterSetName='Cosmos')]
-    [switch]$ImportCosmosDbCert,
+    [switch]$DontImportCosmosDbCert,
 
     [Parameter(ParameterSetName='Cosmos')]
     [Parameter(ParameterSetName='NoCosmos')]
     [switch]$DockerPrune
     
 )
+$ImportCosmosDbCert = -not $DontImportCosmosDbCert
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 if (!$isAdmin -And $ImportCosmosDbCert) {
-    Throw "Must run script as an Admin in order to import cert"
+    Throw "Must run script as an Admin in order to import cosmosDB SSL cert"
 }
 
+$runInBackgroundCosmosCertErrorMessage = 
+
 if ($ImportCosmosDbCert -And (-not $RunInBackground)) {
-    Throw "Cannot use -ImportCosmosDbCert flag unless -RunInBackgroundFlag is also used" #otherwise we will never get the chance to import the cert because docker will be active in the powershell window
+    Throw "Unable to import cosmosDB SSL cert unless -RunInBackgroundFlag is also used.
+           Re-run the script with the -RunInBackground flag enabled.
+           If for whatever reason you need to have RunInBackground disabled,
+           then you must run the script with the -DontImportCosmosDbCert option,
+           and then later you can run the ./scripts/ImportCosmosDbCert script yourself" #otherwise we will never get the chance to import the cert because docker will be active in the powershell window
 }
 
 
