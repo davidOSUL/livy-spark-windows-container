@@ -15,5 +15,5 @@ switch($Type) {
         $command += 'cmd'
     }
 }
-
+"To exit do: control-P control-Q"
 Invoke-Expression $command

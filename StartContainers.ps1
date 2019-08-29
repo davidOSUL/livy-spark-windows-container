@@ -178,7 +178,7 @@ if (!$VerifyOnly) {
         'To open up an interactive shell within the cosmosDB emulator use the script: "./scripts/StartInteractiveCosmosBShell.ps1"'
     }
     'NOTE: If you encounter any issues try re-running the script.
-    If that still does not work try re-running the script with the -DockerPrune option)'
+    (if that still does not work try re-running the script with the -DockerPrune option)'
 }
 
 if (!$TestRun) {

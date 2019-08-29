@@ -5,13 +5,10 @@ function GetComposeCommand(
     [string]$Type) {
         $command = "docker-compose "
         switch($Type) {
-            'AllContainers' {
-                $command += "" 
+            {@('AllContainers', 'CosmosDBOnly') -contains $_} {
+                $command += "-f ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.cosmosDB.yml "
             }
-            'CosmosDBOnly' {
-                $command += "-f ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.cosmosDB.yml"
-            }
-            'SparkLivyOnly' {
+            {@('AllContainers', 'SparkLivyOnly') -contains $_} {
                 $command += "-f  ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.yml"
             }
         }
