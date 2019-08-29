@@ -1,6 +1,6 @@
 
 Param (
-    [Parameter(Mandatory)]
+    [Parameter(Position=0, Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('AllContainers', 'CosmosDBOnly', 'SparkLivyOnly' )]
     [string]$Type,

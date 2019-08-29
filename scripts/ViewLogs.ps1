@@ -1,5 +1,5 @@
 Param (
-    [Parameter(Mandatory)]
+    [Parameter(Position=0, Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet('Livy', 'CosmosDB', 'SparkWorker', 'SparkMaster' )]
     [string[]]$Types
