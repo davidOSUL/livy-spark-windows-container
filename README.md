@@ -45,7 +45,13 @@ To start up an interactive shell in the cosmosDB emulator (with choice of ps/cmd
 .\Scripts\StartInteractiveCosmosDBShell.ps1 Powershell|CommandPrompt
 ```
 
-The cosmosDB emulator can also be started up with a Gremlin and/or Cassandra endpoint using the -CosmosDbEmulatorEndpoints option
+The cosmosDB emulator can also be started up with a Gremlin and/or Cassandra endpoint using the "-CosmosDbEmulatorEndpoints" option. For example:
+
+```
+.\StartContainers.ps1 -CosmosDbEmulator -DontStartSparkLivy -RunInBackground -CosmosDbEmulatorEndpoints Gremlin
+```
+
+
 
 #### Emulator SSL Cert
 - The script will automatically install the emulator's SSL certificate. 
