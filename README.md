@@ -79,7 +79,7 @@ for example to view the logs of the livy and spark-master containers do:
 # Problems
 Here are some troubleshooting tips: 
 
-NOTE: for all of these tips, if only the cosmosDB container is causing problems, in addition to the flags that the troubleshooting tips say to use, make sure you also  run the script with the '-DontStartSparkLivy' flag, as it will save a lot of time.
+NOTE: for all of these tips, if only the cosmosDB container is causing problems (or the import cert is), in addition to the flags that the troubleshooting tips say to use, make sure you also  run the script with the '-DontStartSparkLivy' flag, as it will save a lot of time.
 
 1. First try to re-run the script.
     - You can also run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.

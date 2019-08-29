@@ -128,14 +128,12 @@ if (!$DontPullNewImages) {
 
 . ${env:ROOT_DIR}/scripts/Utils.ps1
 
-
-
 $cosmosDBDuplicateErrorMessage = 'ERROR: Cannot create a cosmosDB container. A cosmosDB container is already running or a file in the volume is being used on the host machine. 
 Make sure your cosmosDB containers are stopped! Try: "./StopContainers CosmosDBOnly -RemoveVolumes"'
 
 if ($CosmosDbEmulator) {
 
-    $hostDir = "${env:LOCALAPPDATA}/CosmosDBEmulatorCert"
+    $hostDir = ${env:COSMOS_DB_HOST_VOLUME_DIR}
 
     if ( (Test-Path $hostDir)) {
         $files = Get-ChildItem "$hostDir"
@@ -222,7 +220,7 @@ if (!$VerifyOnly) {
     }
 
     if ($CosmosDbEmulator) {
-        'To open up an interactive shell within the cosmosDB emulator use the script: "./scripts/StartInteractiveCosmosBShell.ps1"'
+        'To open up an interactive shell within the cosmosDB emulator use the script: "./scripts/StartInteractiveCosmosDBShell.ps1"'
     }
 
     if (!$ImportCosmosDbCert) {
