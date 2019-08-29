@@ -73,5 +73,3 @@ for example:
 - First try to re-run the script.
   - You can also run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.
 - If you see any docker related issues re-run the script with the '-DockerPrune' flag
-
-- If you still have any problems please fill out an [issue](https://github.com/davidOSUL/livy-spark-windows-container/issues) (or submit a [PR](https://github.com/davidOSUL/livy-spark-windows-container/pulls)), thanks!
