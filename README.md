@@ -70,6 +70,23 @@ for example to view the logs of the livy and spark-master containers do:
 ```
 
 # Problems
-- First try to re-run the script.
-  - You can also run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.
-- If you see any docker related issues re-run the script with the '-DockerPrune' flag
+Here are some troubleshooting tips: 
+
+NOTE: for all of these tips, if only the cosmosDB container is causing problems, in addition to the flags that the troubleshooting tips say to use, make sure you also  run the script with the '-DontStartSparkLivy' flag, as it will save a lot of time.
+
+1. First try to re-run the script.
+    - You can also run the script without the -RunInBackground flag to see all the output from the docker logs as it runs.
+2. Run:
+    ```
+    .\StopContainers AllContainers -RemoveVolumes
+    ```
+3. Re-run the script with the '-DockerPrune' flag
+4. Re-run the script with the '-DockerPrune' and '-RebuildContainers' flags (this may take a while)
+5. After trying everything above if you still are having issues do the following:
+    1. Run:
+        ```
+        .\StopContainers AllContainers -RemoveVolumes
+        ```
+    2. If it exists, remove the directory "${env:LOCALAPPDATA}/CosmosDBEmulatorCert"
+    3. Close all powershell windows and then open a new one and cd into the repo folder
+    4. Run the script with the '-DockerPrune', '-RebuildContainers', and '-HardReset' options (this may take a while)
