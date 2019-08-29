@@ -19,7 +19,7 @@ Optionally can also use to start up a windows container with a cosmosDB emulator
 ### Stopping
 To stop all containers execute the following command:
 ```
-.\StopContainers.ps1 -Type AllContainers
+.\StopContainers.ps1 AllContainers
 ```
 
 # Finer Details
@@ -43,7 +43,7 @@ To ONLY start up a cosmosDB emulator and not start spark/livy container do:
 
 To start up an interactive shell in the cosmosDB emulator (with choice of ps/cmd) do:
 ```
-.\Scripts\StartInteractiveCosmosDBShell.ps1 -Type Powershell|CommandPrompt
+.\Scripts\StartInteractiveCosmosDBShell.ps1 Powershell|CommandPrompt
 ```
 
 #### Emulator SSL Cert
@@ -62,11 +62,11 @@ Values for the ports used for the livy server, etc. can be changed in scripts/In
 ### Viewing Logs
 To view docker logs (especially helpful when -RunInBackground is enabled) do:
 ```
-.\Scripts\ViewLogs.ps1 -Types <types>
+.\Scripts\ViewLogs.ps1 <types>
 ```
-for example: 
+for example to view the logs of the livy and spark-master containers do:
 ```
-.\Scripts\ViewLogs.ps1 -Types Livy,SparkMaster
+.\Scripts\ViewLogs.ps1  Livy,SparkMaster
 ```
 
 # Problems
