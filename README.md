@@ -31,20 +31,21 @@ Get-Help .\StartContainers.ps1 -Detailed
 ### CosmosDB Emulator
 To start up a cosmosDB emulator container in addition to the spark/livy containers, open up a new powershell window <b>as an administrator</b>, cd into the repo folder, and execute the following command:
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type> -RunInBackground
+.\StartContainers.ps1 -CosmosDbEmulator -RunInBackground
 ```
-Where \<type\> is one of: MSI, Cassandra, Gremlin.
 
 To ONLY start up a cosmosDB emulator and not start spark/livy container do:
 
 ```
-.\StartContainers.ps1 -CosmosDbEmulator <type> -DontStartSparkLivy -RunInBackground
+.\StartContainers.ps1 -CosmosDbEmulator -DontStartSparkLivy -RunInBackground
 ```
 
 To start up an interactive shell in the cosmosDB emulator (with choice of ps/cmd) do:
 ```
 .\Scripts\StartInteractiveCosmosDBShell.ps1 Powershell|CommandPrompt
 ```
+
+The cosmosDB emulator can also be started up with a Gremlin and/or Cassandra endpoint using the -CosmosDbEmulatorEndpoints option
 
 #### Emulator SSL Cert
 - The script will automatically install the emulator's SSL certificate. 
