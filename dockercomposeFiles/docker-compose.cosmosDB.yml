@@ -6,7 +6,7 @@ services:
           dockerfile: ${ROOT_DIR}/dockerFiles/azure-cosmosdb-emulator.Dockerfile
         image: davidosullivan/livy-spark-windows-container:azure-cosmosdb-emulator #For whatever reason, the microsoft image doesn't work in compose
                                        #See also: https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/27
-        mem_limit: 2GB
+        mem_limit: "${COSMOS_DB_MEM_LIMIT}"
         volumes:
           - type: bind
             source: ${COSMOS_DB_HOST_VOLUME_DIR}

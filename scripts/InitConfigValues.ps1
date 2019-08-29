@@ -10,6 +10,7 @@
     $env:CASSANDRA_ENDPOINT_HOST_PORT = 10350
     $env:GREMLIN_ENDPOINT_HOST_PORT = 8901
     $env:COSMOS_DB_HOST_VOLUME_DIR = "${env:LOCALAPPDATA}/CosmosDBEmulatorCert"
+    $env:COSMOS_DB_MEM_LIMIT = "4GB"
 
 #Docker configs
     #Right now this value isn't used because compose files don't support env variables in the "version" option
