@@ -1,5 +1,4 @@
 Set-Location ${env:LIVY_HOME}
-java -cp "./jars/*;./conf;" org.apache.livy.server.LivyServer
 
 #this is necessary because livy configuration files don't support environment variables directly
 $confFiles = Get-ChildItem "conf/"
@@ -11,3 +10,5 @@ foreach ($f in $confFiles){
         (Get-Content $f.FullName).replace($variableName, $var.Value) | Set-Content $f.FullName
     }
 }
+
+java -cp "./jars/*;./conf;" org.apache.livy.server.LivyServer

@@ -9,8 +9,8 @@ services:
         mem_limit: 2GB
         volumes:
           - type: bind
-            source: ${LOCALAPPDATA}/azure-cosmosdb-emulator.hostd
-            target: C:/CosmosDB.Emulator/bind-mount
+            source: ${COSMOS_DB_HOST_VOLUME_DIR}
+            target: C:/CosmosDBEmulator/CosmosDBEmulatorCert
         container_name: cosmosDB
         ports:
             - "${COSMOS_DB_HOST_PORT}:8081"

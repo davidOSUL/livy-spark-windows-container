@@ -9,8 +9,10 @@
     $env:COSMOS_DB_HOST_PORT = 8081
     $env:CASSANDRA_ENDPOINT_HOST_PORT = 10350
     $env:GREMLIN_ENDPOINT_HOST_PORT = 8901
+    $env:COSMOS_DB_HOST_VOLUME_DIR = "${env:LOCALAPPDATA}/CosmosDBEmulatorCert"
 
 #Docker configs
     #Right now this value isn't used because compose files don't support env variables in the "version" option
     $env:DOCKER_COMPOSE_VERSION= '2.3' #have to use version 2 to have mem_limit enabled. 
     $env:ROOT_DIR = (Get-Item ${PSScriptRoot}).Parent.FullName
+
