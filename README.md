@@ -19,7 +19,7 @@ Optionally can also use to start up a windows container with a cosmosDB emulator
 ### Stopping
 To stop all containers execute the following command:
 ```
-.\StopContainers.ps1 -AllContainers
+.\StopContainers.ps1 -Type AllContainers
 ```
 
 # Finer Details
