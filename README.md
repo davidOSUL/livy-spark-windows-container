@@ -4,6 +4,8 @@ Windows containers with Livy/Spark.
 Optionally can also use to start up a windows container with a cosmosDB emulator in addition to (or instead of) the containers with livy/spark.
 
 # How to use
+
+### Starting Up
 1. Download the repo
 2. Open up a new powershell window and cd into the downloaded repo
 2. Execute the following command:
@@ -13,7 +15,13 @@ Optionally can also use to start up a windows container with a cosmosDB emulator
   This will start up three containers -- a spark worker, a spark master, and a livy server
   
   Once the containers are finished starting up, the livy server will be accesible at http://localhost:8998
-  
+
+### Stopping
+To stop all containers execute the following command:
+```
+.\StopContainers.ps1 -AllContainers
+```
+
 # Finer Details
 ### Script Options
 To see how to use the script with more options do:
@@ -38,8 +46,23 @@ without the flag (which doesn't require administrator access), and then later in
 .\Scripts\ImportCosmosDbCert.ps1
 ```
 
+To start up an interactive shell in the cosmosDB emulator (with choice of ps/cmd) do:
+```
+.\Scripts\StartInteractiveCosmosDBShell.ps1 -Type Powershell|CommandPrompt
+```
+
 ### Changing default values for ports, etc.
 Values for the ports used for the livy server, etc. can be changed in scripts/InitConfigValues.ps1
+
+### Viewing Logs
+To view docker logs (especially helpful when -RunInBackground is enabled) do:
+```
+.\Scripts\ViewLogs.ps1 -Types <types>
+```
+for example: 
+```
+.\Scripts\ViewLogs.ps1 -Types Livy,SparkMaster
+```
 
 # Problems
 - First try to re-run the script.
