@@ -4,7 +4,7 @@ services:
         build:
           context: ${ROOT_DIR}/dockerContexts/cosmosDB_Context
           dockerfile: ${ROOT_DIR}/dockerFiles/azure-cosmosdb-emulator.Dockerfile
-        image: azure-cosmosdb-emulator #For whatever reason, the microsoft image doesn't work in compose
+        image: davidosullivan/livy-spark-windows-container:azure-cosmosdb-emulator #For whatever reason, the microsoft image doesn't work in compose
                                        #See also: https://github.com/Azure/azure-cosmos-db-emulator-docker/issues/27
         mem_limit: 2GB
         volumes:
@@ -28,3 +28,9 @@ services:
         environment:
           - "${COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_0}" #set in StartContainers script 
           - "${COSMOSDB_CONTAINER_ENVIRONMENT_SETTING_1}" #set in StartContainers script 
+        networks:
+          - cosmosDB-network
+
+networks:
+  cosmosDB-network:
+    name: cosmosDB-network

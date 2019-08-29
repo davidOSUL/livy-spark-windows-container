@@ -42,6 +42,9 @@
 .PARAMETER HardReset
     Before doing regular compose, rebuilds the containers that will be run with this script without any cache
 
+.PARAMETER DontPullNewImages
+    Don't pull new images from the remote repositiory (note that if the images do not exist, this will trigger a rebuild)
+
 #>
 
 [cmdletbinding(DefaultParameterSetName='NoCosmos')]
@@ -87,10 +90,14 @@ Param(
 
     [Parameter(ParameterSetName='Cosmos')]
     [Parameter(ParameterSetName='NoCosmos')]
-    [switch]$HardReset
+    [switch]$HardReset,
+
+    [Parameter(ParameterSetName='Cosmos')]
+    [Parameter(ParameterSetName='NoCosmos')]
+    [switch]$DontPullNewImages
     
 )
-$ImportCosmosDbCert = -not $DontImportCosmosDbCert
+$ImportCosmosDbCert = ($CosmosDBEmulator -and (-not $DontImportCosmosDbCert))
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 if (!$isAdmin -And $ImportCosmosDbCert) {
     Throw "Must run script as an Admin in order to import cosmosDB SSL cert"
@@ -110,6 +117,10 @@ if ((!$DockerPrune -or !$RebuildContainers) -and $HardReset) {
 
 if ($DockerPrune) {
     docker system prune
+}
+
+if (!$DontPullNewImages) {
+    Invoke-Expression "docker pull -a davidosullivan/livy-spark-windows-container"
 }
 
 #Set up all the configuration values
