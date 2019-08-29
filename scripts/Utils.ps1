@@ -38,7 +38,7 @@ function GetCertPath([switch] $GetImportScriptRatherThanCert) {
     $importCertScriptPath = $volumePath + "/importcert.ps1"
     $certPath = $volumePath + "/CosmosDBEmulatorCert.pfx"
 
-    if ($getImportScriptRatherThanCert) {
+    if ($GetImportScriptRatherThanCert) {
         return $importCertScriptPath
     }
     else {

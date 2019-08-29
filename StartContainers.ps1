@@ -82,8 +82,6 @@ if (!$isAdmin -And $ImportCosmosDbCert) {
     Throw "Must run script as an Admin in order to import cosmosDB SSL cert"
 }
 
-$runInBackgroundCosmosCertErrorMessage = 
-
 if ($ImportCosmosDbCert -And (-not $RunInBackground)) {
     Throw "Unable to import cosmosDB SSL cert unless -RunInBackgroundFlag is also used.
            Re-run the script with the -RunInBackground flag enabled.
@@ -92,8 +90,6 @@ if ($ImportCosmosDbCert -And (-not $RunInBackground)) {
            and then later you can run the ./scripts/ImportCosmosDbCert script yourself" #otherwise we will never get the chance to import the cert because docker will be active in the powershell window
 }
 
-
-
 if ($DockerPrune) {
     docker system prune
 }
@@ -101,11 +97,10 @@ if ($DockerPrune) {
 #Set up all the configuration values
 & ("${PSScriptRoot}/scripts/InitConfigValues.ps1")
 
-$script:sparkLivyComposeFile = " -f  ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.yml"
-$script:cosmosDBComposeFile = ""
+. ${env:ROOT_DIR}/scripts/Utils.ps1
+
 $script:RunningCosmosDBContainer = $PSBoundParameters.ContainsKey('CosmosDbEmulator')
 
-. ${env:ROOT_DIR}/scripts/Utils.ps1
 
 $cosmosDBDuplicateErrorMessage = 'ERROR: Cannot create a cosmosDB container. A cosmosDB container is already running or a file in the volume is being used on the host machine. 
 Make sure your cosmosDB containers are stopped! Try: "./StopContainers -Type CosmosDBOnly -RemoveVolumes"'
@@ -122,7 +117,6 @@ if ($script:RunningCosmosDBContainer) {
         }
     }
     mkdir $hostDir 2>$null 
-    $script:cosmosDBComposeFile = " -f ${env:ROOT_DIR}/dockercomposeFiles/docker-compose.cosmosDB.yml"
     "CosmosDB container will be accessible at ${env:COSMOS_DB_HOST_PORT}"
     switch($CosmosDbEmulator) {
         'MSI' {
@@ -149,15 +143,17 @@ if ($RebuildContainers) {
     $extraParams += " --build"
 }
 
-$composeCommand = "docker-compose"
-
-if (!$DontStartSparkLivy) {
-    $composeCommand += $script:sparkLivyComposeFile
-}
-
 if ($script:RunningCosmosDBContainer) {
-    $composeCommand +=  $script:cosmosDBComposeFile
+    if (!$DontStartSparkLivy) {
+        $Type = 'AllContainers'
+    } else {
+        $Type = 'CosmosDBOnly'
+    }
+} else {
+    $Type = 'SparkLivyOnly'
 }
+
+$composeCommand = GetComposeCommand -Type $Type
 
 if ($VerifyOnly) {
     $composeCommand += " config"
@@ -192,9 +188,12 @@ if (!$VerifyOnly) {
 
 if (!$TestRun) {
     Invoke-Expression $composeCommand
+    if ($ImportCosmosDbCert) {
+        Invoke-Expression "${env:ROOT_DIR}/scripts/ImportCosmosDbCert.ps1 -Wait"
+    } else {
+        "To import the cosmosDB SSL cert yourself do ./scripts/ImportCosmosDBCert.ps1"
+    }
 }
 
-if ($ImportCosmosDbCert) {
-    Invoke-Expression "${env:ROOT_DIR}/scripts/ImportCosmosDbCert.ps1 -Wait"
-}
+
 

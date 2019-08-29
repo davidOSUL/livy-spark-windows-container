@@ -13,6 +13,6 @@
 
 #Docker configs
     #Right now this value isn't used because compose files don't support env variables in the "version" option
-    $env:DOCKER_COMPOSE_VERSION= '2.3' #have to use version 2 to have mem_limit enabled. 
+    $env:DOCKER_COMPOSE_VERSION= '2.4' #have to use version 2 to have mem_limit enabled. 
     $env:ROOT_DIR = (Get-Item ${PSScriptRoot}).Parent.FullName
 
